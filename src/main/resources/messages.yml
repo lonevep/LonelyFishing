@@ -1,0 +1,47 @@
+# ============================ 消息配置 ============================
+# 支持颜色代码 & / &amp; 使用 &amp; 表示 &
+# 变量: {player} = 玩家名  {amount} = 数量  {progress} = 当前进度  {required} = 所需次数
+#       {money} {points} {exp} = 鱼竿倍率  {group} = 物品组名  {item-id} = 物品节点名
+
+prefix: "&a[钓鱼] &r"
+
+# 手中并非配置过的鱼竿时提示 (仅 block-vanilla-rods: true 时生效)
+no-rod: "&c你手中的鱼竿无法用于钓鱼!"
+
+# 钓上物品 (成功收竿) 提示
+reel-success: "&a你成功钓上了物品!"
+
+# 收竿进度提示 (还未达到所需次数)
+reel-progress: "&e本次还需收竿 &6{required} &e次, 当前进度 &6{progress}&e/&6{required}"
+
+# 倍率提示 (成功钓上物品后展示鱼竿倍率)
+multiplier-info: "&b倍率加成 &7| &e金币 x{money} &b点券 x{points} &a经验 x{exp}"
+
+# 奖励提示 (对应留空的奖励不会发送)
+reward-money: "&6+{amount} 金币"
+reward-points: "&b+{amount} 点券"
+reward-exp: "&a+{amount} 经验"
+
+# 鱼竿未配置任何可钓物品组
+no-item-group: "&c该鱼竿未配置任何可钓物品组!"
+
+# 物品库中找不到对应物品 (节点名错误)
+item-not-found: "&c物品库中找不到物品: &e{item-id} &c(source={source})"
+
+# 金币/点券插件未安装时的提示
+economy-missing: "&c经济插件(Vault)未安装, 无法给予金币"
+points-missing: "&c点券插件(PlayerPoints)未安装, 无法给予点券"
+
+# 重载
+reload-success: "&a配置已重载!"
+reload-no-perm: "&c你没有权限执行此操作"
+
+# 未知子指令
+unknown-subcommand: "&c未知子指令, 输入 &e/lfi help &c查看帮助"
+
+# 帮助 (多行列表), {author} 由插件运行时注入
+help:
+  - "&a========== &eLonelyFishing &a=========="
+  - "&7作者: &f{author}"
+  - "&a/lfi reload &7- &f热重载所有配置文件"
+  - "&a/lfi help &7- &f显示此帮助信息"

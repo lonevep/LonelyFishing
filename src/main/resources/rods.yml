@@ -1,0 +1,44 @@
+# ============================ 鱼竿配置 ============================
+# 鱼竿直接从 MythicMobs(mm) / NeigeItems(ni) 物品库中提取
+# 玩家手中的物品若是下方配置的 mm/ni 物品, 即视为该鱼竿
+#
+# 字段说明:
+#   source        : 物品库类型, mm 或 ni
+#   item-id       : 物品库中的节点名/内部名 (用于检测玩家手中的鱼竿)
+#   item-groups   : 该鱼竿可钓到的物品组列表 (对应 itemGroups.yml 中的组名)
+#                   钓鱼时会把所列物品组内的全部物品汇总成一个权重池进行抽奖
+#   multipliers   : 钓上物品后金币/点券/经验的独立倍率
+#   reel-count    : 收竿所需次数。可填固定数字 "3", 或随机区间 "1_10" (最小_最大)
+#                   每次成功给奖后会重新随机一次下一次所需的收竿次数
+#   commands      : 成功钓上物品后触发的指令 (可留空)
+#                   指令前缀 [OP] 以 OP 玩家身份执行, [CONSOLE] 以控制台执行
+#                   支持变量 %player_name%
+
+rods:
+  # ---- 示例: 普通木质鱼竿 (MythicMobs) ----
+  basic_rod:
+    source: mm
+    item-id: "basic_fishing_rod"
+    item-groups:
+      - common_fish
+    multipliers:
+      money: 1.0
+      points: 1.0
+      exp: 1.0
+    reel-count: "1_3"
+    commands: []
+
+  # ---- 示例: 史诗鱼竿 (NeigeItems) ----
+  epic_rod:
+    source: ni
+    item-id: "epic_fishing_rod"
+    item-groups:
+      - common_fish
+      - rare_fish
+    multipliers:
+      money: 2.0
+      points: 1.5
+      exp: 2.0
+    reel-count: "1_5"
+    commands:
+      - "[CONSOLE] say %player_name% 用史诗鱼竿钓到了好东西!"

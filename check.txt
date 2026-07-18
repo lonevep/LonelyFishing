@@ -1,0 +1,32 @@
+﻿COUNT=270
+===TAIL===
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-component-annotations/1.5.5/plexus-component-annotations-1.5.5.jar
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/eclipse/sisu/org.eclipse.sisu.plexus/0.3.5/org.eclipse.sisu.plexus-0.3.5.jar (205 kB at 32 kB/s)
+[INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-classworlds/2.6.0/plexus-classworlds-2.6.0.jar
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.4.9/plexus-utils-1.4.9.jar (204 kB at 32 kB/s)
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar (26 kB at 4.0 kB/s)
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-component-annotations/1.5.5/plexus-component-annotations-1.5.5.jar (4.2 kB at 635 B/s)
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-classworlds/2.6.0/plexus-classworlds-2.6.0.jar (53 kB at 7.7 kB/s)
+[INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/eclipse/sisu/org.eclipse.sisu.inject/0.3.5/org.eclipse.sisu.inject-0.3.5.jar (379 kB at 53 kB/s)
+[INFO] execute ProGuard [-injars, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\LonelyFishing-1.0_proguard_base.jar'(!META-INF/maven/**), -libraryjars, 'C:\Users\wqj32\.m2\repository\org\spigotmc\spigot-api\1.8.8-R0.1-SNAPSHOT\spigot-api-1.8.8-R0.1-SNAPSHOT.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\googlecode\json-simple\json-simple\1.1.1\json-simple-1.1.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\junit\junit\4.10\junit-4.10.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\hamcrest\hamcrest-core\1.1\hamcrest-core-1.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\google\guava\guava\17.0\guava-17.0.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\google\code\gson\gson\2.2.4\gson-2.2.4.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\avaje\ebean\2.8.1\ebean-2.8.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\javax\persistence\persistence-api\1.0\persistence-api-1.0.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\yaml\snakeyaml\1.15\snakeyaml-1.15.jar', -outjars, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\LonelyFishing-1.0.jar', -libraryjars, 'C:\Program Files\Java\jdk-21/jmods/', -printmapping, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\proguard_map.txt', -printseeds, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\proguard_seed.txt', -dontshrink, -dontoptimize, -dontpreverify, -dontwarn, -ignorewarnings, -dontnote, -allowaccessmodification, -keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault,Signature,InnerClasses,EnclosingMethod, -keep public class com.lonelyFishing.LonelyFishing { *; }, -keep class * implements org.bukkit.event.Listener, -keepclassmembers class * implements org.bukkit.event.Listener { @org.bukkit.event.EventHandler <methods>; }, -keepclassmembers class * implements org.bukkit.command.CommandExecutor { public boolean onCommand(org.bukkit.command.CommandSender,org.bukkit.command.Command,java.lang.String,java.lang.String[]); }]
+[INFO] proguard jar: [C:\Users\wqj32\.m2\repository\com\guardsquare\proguard-base\7.4.2\proguard-base-7.4.2.jar]
+ [proguard] Exception in thread "main" java.lang.NoSuchMethodError: 'void proguard.io.ClassReader.<init>(boolean, boolean, boolean, boolean, boolean, proguard.classfile.util.WarningPrinter, proguard.classfile.visitor.ClassVisitor)'
+ [proguard] 	at proguard.InputReader.execute(InputReader.java:93)
+ [proguard] 	at proguard.pass.PassRunner.run(PassRunner.java:24)
+ [proguard] 	at proguard.ProGuard.readInput(ProGuard.java:330)
+ [proguard] 	at proguard.ProGuard.execute(ProGuard.java:123)
+ [proguard] 	at proguard.ProGuard.main(ProGuard.java:648)
+ [proguard] ProGuard, version 7.4.2
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:02 min
+[INFO] Finished at: 2026-07-17T14:04:37+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal com.github.wvengen:proguard-maven-plugin:2.6.0:proguard (default) on project lonelyfishing: Obfuscation failed (result=1) -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

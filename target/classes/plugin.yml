@@ -1,0 +1,22 @@
+name: LonelyFishing
+version: '1.0'
+main: com.lonelyFishing.LonelyFishing
+api-version: '1.13'
+authors: [ lone_vep ]
+description: 多版本钓鱼插件, 支持 MythicMobs / NeigeItems 物品库
+load: POSTWORLD
+softdepend: [ MythicMobs, NeigeItems, Vault, PlayerPoints ]
+
+commands:
+  lonelyfishing:
+    description: LonelyFishing 主指令
+    aliases: [ lfi ]
+    usage: "/lfi reload"
+
+permissions:
+  lonelyfishing.reload:
+    description: 允许重载插件配置
+    default: op
+  lonelyfishing.use:
+    description: 允许使用自定义鱼竿钓鱼
+    default: true

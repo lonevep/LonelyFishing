@@ -1,0 +1,44 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com:lonelyfishing >--------------------------
+[INFO] Building LonelyFishing 1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ lonelyfishing ---
+[INFO] Deleting C:\Users\wqj32\IdeaProjects\LonelyFishing\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ lonelyfishing ---
+[INFO] Copying 5 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ lonelyfishing ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 19 source files with javac [debug target 1.8] to target\classes
+[WARNING] δ�� -source 8 һ������������·��
+[WARNING] Դֵ 8 �ѹ�ʱ������δ�����а���ɾ��
+[WARNING] Ŀ��ֵ 8 �ѹ�ʱ������δ�����а���ɾ��
+[WARNING] Ҫ�����й��ѹ�ʱѡ��ľ���, ��ʹ�� -Xlint:-options��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ lonelyfishing ---
+[INFO] skip non existing resourceDirectory C:\Users\wqj32\IdeaProjects\LonelyFishing\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ lonelyfishing ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ lonelyfishing ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ lonelyfishing ---
+[INFO] Building jar: C:\Users\wqj32\IdeaProjects\LonelyFishing\target\LonelyFishing-1.0.jar
+[INFO] 
+[INFO] --- proguard:2.6.0:proguard (default) @ lonelyfishing ---
+[INFO] execute ProGuard [-injars, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\LonelyFishing-1.0_proguard_base.jar'(!META-INF/maven/**), -libraryjars, 'C:\Users\wqj32\.m2\repository\org\spigotmc\spigot-api\1.8.8-R0.1-SNAPSHOT\spigot-api-1.8.8-R0.1-SNAPSHOT.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\googlecode\json-simple\json-simple\1.1.1\json-simple-1.1.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\junit\junit\4.10\junit-4.10.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\hamcrest\hamcrest-core\1.1\hamcrest-core-1.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\google\guava\guava\17.0\guava-17.0.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\com\google\code\gson\gson\2.2.4\gson-2.2.4.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\avaje\ebean\2.8.1\ebean-2.8.1.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\javax\persistence\persistence-api\1.0\persistence-api-1.0.jar', -libraryjars, 'C:\Users\wqj32\.m2\repository\org\yaml\snakeyaml\1.15\snakeyaml-1.15.jar', -outjars, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\LonelyFishing-1.0.jar', -libraryjars, 'C:\Program Files\Java\jdk-21/jmods/', -printmapping, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\proguard_map.txt', -printseeds, 'C:\Users\wqj32\IdeaProjects\LonelyFishing\target\proguard_seed.txt', -dontshrink, -dontoptimize, -dontwarn, -ignorewarnings, -dontnote, -allowaccessmodification, -keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault,Signature,InnerClasses,EnclosingMethod, -keep public class com.lonelyFishing.LonelyFishing { *; }, -keep class * implements org.bukkit.event.Listener, -keepclassmembers class * implements org.bukkit.event.Listener { @org.bukkit.event.EventHandler <methods>; }, -keepclassmembers class * implements org.bukkit.command.CommandExecutor { public boolean onCommand(org.bukkit.command.CommandSender,org.bukkit.command.Command,java.lang.String,java.lang.String[]); }]
+[INFO] proguard jar: [C:\Users\wqj32\.m2\repository\com\guardsquare\proguard-base\7.4.2\proguard-base-7.4.2.jar]
+ [proguard] ProGuard, version 7.4.2
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  26.041 s
+[INFO] Finished at: 2026-07-17T19:02:29+08:00
+[INFO] ------------------------------------------------------------------------
+MVN_EXIT=0

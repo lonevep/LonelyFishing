@@ -1,0 +1,61 @@
+# ============================ 物品组配置 ============================
+# 每个物品组包含若干物品, 通过 "权重" 决定钓上各物品的概率
+# 鱼竿会把其 item-groups 所列各组中的全部物品汇总成一个权重池抽奖
+#
+# 单个物品字段:
+#   source    : 物品库类型, mm 或 ni
+#   item-id   : 物品库中的节点名/内部名 (钓上后从对应物品库提取该物品给玩家)
+#   weight    : 权重 (数字越大越容易钓到)
+#   money     : 钓上后给予的金币数量 (Vault), 留空则不给
+#   points    : 钓上后给予的点券数量 (PlayerPoints), 留空则不给
+#   exp       : 钓上后给予的经验数量, 留空则不给
+#   commands  : 钓上后触发的指令, 留空则不触发
+#               指令前缀 [OP] 以 OP 玩家身份执行, [CONSOLE] 以控制台执行
+#               支持变量 %player_name%
+# 注: 金币/点券/经验最终数量 = 物品配置数量 * 鱼竿对应倍率
+
+item-groups:
+  common_fish:
+    items:
+      cod:
+        source: mm
+        item-id: "raw_cod"
+        weight: 50
+        money: 10
+        points: 1
+        exp: 5
+        commands: []
+      salmon:
+        source: ni
+        item-id: "raw_salmon"
+        weight: 30
+        money: 15
+        exp: 8
+        commands:
+          - "[OP] me 钓到了一条鲑鱼"
+      junk_boot:
+        source: mm
+        item-id: "leather_boots"
+        weight: 20
+        commands: []
+
+  rare_fish:
+    items:
+      rare_tuna:
+        source: ni
+        item-id: "rare_tuna"
+        weight: 40
+        money: 80
+        points: 8
+        exp: 30
+        commands:
+          - "[CONSOLE] say 稀有金枪鱼上钩! 钓手: %player_name%"
+      treasure_chest:
+        source: mm
+        item-id: "treasure_chest"
+        weight: 10
+        money: 200
+        points: 20
+        exp: 100
+        commands:
+          - "[CONSOLE] give %player_name% diamond 1"
