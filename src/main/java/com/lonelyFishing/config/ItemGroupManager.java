@@ -48,7 +48,15 @@ public class ItemGroupManager {
         Integer points = s.contains("points") ? s.getInt("points") : null;
         Integer exp = s.contains("exp") ? s.getInt("exp") : null;
         List<String> commands = s.getStringList("commands");
-        return new GroupItem(id, source, itemId, weight, money, points, exp, commands);
+        // 解析自定义变量基础值 (变量名 -> 基础值), 对应 config.yml 的 custom-variables
+        Map<String, Double> variables = new HashMap<String, Double>();
+        ConfigurationSection vSec = s.getConfigurationSection("variables");
+        if (vSec != null) {
+            for (String varName : vSec.getKeys(false)) {
+                variables.put(varName, vSec.getDouble(varName, 0));
+            }
+        }
+        return new GroupItem(id, source, itemId, weight, money, points, exp, commands, variables);
     }
 
     public ItemGroup getGroup(String id) {

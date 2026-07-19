@@ -35,61 +35,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.1</version>
             </plugin>
-            <!-- 代码混淆加密: ProGuard. 仅重命名, 不移除/不优化, 无运行时性能损耗 -->
-            <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.6.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>proguard</goal></goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <proguardVersion>7.4.2</proguardVersion>
-                    <obfuscate>true</obfuscate>
-                    <attach>false</attach>
-                    <appendClassifier>false</appendClassifier>
-                    <injarNotExistsSkip>true</injarNotExistsSkip>
-                    <options>
-                        <option>-dontshrink</option>
-                        <option>-dontoptimize</option>
-                        <!-- 不能使用 -dontpreverify: Java 7+ (class v51+) 强制要求 StackMapTable 帧,
-                             ProGuard 默认会重新计算并写入这些帧; 一旦 -dontpreverify 则帧被剥离且不重建,
-                             会导致 VerifyError: Expecting a stackmap frame at branch target -->
-                        <option>-dontwarn</option>
-                        <option>-ignorewarnings</option>
-                        <option>-dontnote</option>
-                        <option>-allowaccessmodification</option>
-                        <option>-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault,Signature,InnerClasses,EnclosingMethod</option>
-                        <!-- 主类 (plugin.yml 引用) 必须保留 -->
-                        <option>-keep public class com.lonelyFishing.LonelyFishing { *; }</option>
-                        <!-- Bukkit 监听器: 保留类与 @EventHandler 方法 (Bukkit 通过反射扫描注解) -->
-                        <option>-keep class * implements org.bukkit.event.Listener</option>
-                        <option>-keepclassmembers class * implements org.bukkit.event.Listener { @org.bukkit.event.EventHandler &lt;methods&gt;; }</option>
-                        <!-- 命令执行器 -->
-                        <option>-keepclassmembers class * implements org.bukkit.command.CommandExecutor { public boolean onCommand(org.bukkit.command.CommandSender,org.bukkit.command.Command,java.lang.String,java.lang.String[]); }</option>
-                    </options>
-                    <libs>
-                        <lib>${java.home}/jmods/</lib>
-                    </libs>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.guardsquare</groupId>
-                        <artifactId>proguard-base</artifactId>
-                        <version>7.4.2</version>
-                    </dependency>
-                    <!-- 强制对齐 proguard-core 至 9.1.1, 与 proguard-base 7.4.2 编译期一致 -->
-                    <!-- 否则插件自身传递的 9.0.1 会因 ClassReader 构造方法签名不同而 NoSuchMethodError -->
-                    <dependency>
-                        <groupId>com.guardsquare</groupId>
-                        <artifactId>proguard-core</artifactId>
-                        <version>9.1.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
         <resources>
             <resource>

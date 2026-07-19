@@ -10,3 +10,70 @@ message-cooldown: 3
 
 # 钓上物品后, 若背包满则是否将物品掉落在玩家脚下
 drop-when-full: true
+
+# ============================ lore 加成配置 ============================
+# 鱼竿 lore 加成: 通过检测鱼竿上的 lore 行来增加钓上鱼的概率与一次性钓上的条数。
+#
+# 字段说明 (每个条目):
+#   lore              : 触发加成所需的 lore 子串 (匹配前会对鱼竿 lore 和此关键字都去除颜色码)
+#                       只要鱼竿任意一行 lore 包含此关键字即视为命中
+#   catch-rate-bonus  : 钓上鱼概率加成, 0.1 表示 +10%
+#                       计算方式: 最终概率 = 鱼竿基础 catch-rate * (1 + 加成)
+#                       多个命中条目做乘法叠加 (例: 两个 0.1 -> * 1.1 * 1.1)
+#   multi-catch       : 命中后按概率提升一次性钓上的条数 (取命中条目最大 amount, 默认 1 条)
+#     - chance        : 命中此条目的概率 (0-1)
+#     - amount        : 一次性钓上的条数 (>=2 才会生效)
+#
+# 示例: 鱼竿上有 lore "海之眷顾 I"
+#   - 钓上鱼概率 +10% (基础 0.8 -> 0.8 * 1.1 = 0.88)
+#   - 10% 概率一次性钓上 2 条
+lore-bonuses:
+  - lore: "海之眷顾 I"
+    catch-rate-bonus: 0.1
+    multi-catch:
+      - chance: 0.1
+        amount: 2
+  - lore: "海之眷顾 II"
+    catch-rate-bonus: 0.2
+    multi-catch:
+      - chance: 0.2
+        amount: 2
+      - chance: 0.05
+        amount: 3
+  - lore: "海之眷顾 III"
+    catch-rate-bonus: 0.3
+    multi-catch:
+      - chance: 0.3
+        amount: 2
+      - chance: 0.1
+        amount: 3
+
+# ============================ 自定义变量配置 ============================
+# 钓到鱼时可以增加玩家的自定义变量 (如等级、声望、积分等)。
+# 变量当前值通过 PlaceholderAPI 占位符读取 (用于消息提示), 变量值增加通过指令完成
+# (PAPI 本身只读, 不能直接写; 由变量所属插件自己的指令完成增加, 如 LevelLocals 的 /ll add)。
+#
+# 工作流程:
+#   1. 物品组 (itemGroups.yml) 中物品配置 variables: {变量名: 基础值}
+#   2. 鱼竿 (rods.yml) 可配置 variable-multipliers: {变量名: 倍率} 和 variable-messages: {变量名: 消息模板}
+#   3. 钓上鱼时: 最终增加量 = 物品基础值 * 鱼竿倍率
+#   4. 执行 add-command 增加变量 (替换 {amount} 和 %player_name%)
+#   5. 发送 message 提示 (替换占位符 + 上色)
+#
+# 字段说明 (每个变量):
+#   placeholder   : 读取该变量当前值的 PAPI 占位符 (用于消息提示中的 {current})
+#                   需要安装 PlaceholderAPI 插件; 未安装时 {current} 为空, 但 add-command 仍会执行
+#   add-command   : 增加变量的指令模板, 支持 {amount} (最终增加量) 和 %player_name% 占位符
+#                   {amount} 会被替换为: 物品基础值 * 鱼竿倍率
+#                   例: "ll add %player_name% {amount} 默认" -> /ll add Steve 5 默认
+#                   留空则只发消息不增加变量 (仅用于展示)
+#   message       : 增加后发送给玩家的提示 (留空则不发送)
+#                   占位符: {amount}(最终增加量) {base}(物品基础值) {multiplier}(鱼竿倍率)
+#                           {current}(增加后的当前值, 通过 placeholder 读取) {player}(玩家名)
+#                   支持 & 颜色码
+#                   鱼竿 (rods.yml) 可用 variable-messages 覆盖此消息
+custom-variables:
+  ll_level:
+    placeholder: "%ll_level-默认%"
+    add-command: "ll add %player_name% {amount} 默认"
+    message: "&a+{amount} 等级 &7(基础 {base} × {multiplier}, 当前: &e{current}&7)"

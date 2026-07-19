@@ -10,9 +10,33 @@
 #   multipliers   : 钓上物品后金币/点券/经验的独立倍率
 #   reel-count    : 收竿所需次数。可填固定数字 "3", 或随机区间 "1_10" (最小_最大)
 #                   每次成功给奖后会重新随机一次下一次所需的收竿次数
+#   catch-rate    : 基础钓上鱼概率 (0-1), 不填默认 1.0 (100%)
+#                   达到收竿次数后会以此概率掷骰判定是否钓上; 与 config.yml 的 lore-bonuses 做乘法叠加
+#                   例: catch-rate 0.8 + lore 加成 0.1 -> 最终概率 0.8 * 1.1 = 0.88
+#   wait-time     : 鱼咬钩前的等待时间 (ticks, 20 ticks = 1 秒), 区间 "min_max" 或固定值
+#                   减小此值 = 加快钓鱼速度 (鱼更快咬钩); 留空则用原版随机 (约 5-30 秒)
+#                   仅 1.9+ 服务端支持精确控制, 1.8 反射找不到方法会静默跳过
+#   lure-time     : 鱼咬钩后玩家拉杆的时间窗口 (ticks), 区间 "min_max" 或固定值
+#                   增大此值 = 玩家有更充足时间拉杆 (不易脱钩); 留空则用原版 (约 1-4 秒)
+#                   仅 1.9+ 服务端支持精确控制, 1.8 不生效
+#   multiplier-info / -money / -points / -exp : 倍率提示自定义 (留空则用 messages.yml 默认)
+#                   multiplier-info  : 合三为一提示, 占位符 {money}{points}{exp}{player}
+#                   multiplier-money/-points/-exp : 独立三条提示, 任意一条非空则启用独立模式
+#                   (启用独立模式时 multiplier-info 不发送; 留空的独立条目不发送)
+#   variable-multipliers : 自定义变量倍率 (变量名 -> 倍率), 对应 config.yml 的 custom-variables
+#                          钓上物品时: 最终增加量 = 物品基础值 * 此处倍率
+#                          未列出的变量默认倍率 1.0
+#   variable-messages     : 自定义变量消息覆盖 (变量名 -> 消息模板), 留空则用 config.yml 默认 message
+#                          占位符: {amount}(最终增加量) {base}(基础值) {multiplier}(倍率) {current}(当前值) {player}
+#                          支持 & 颜色码
 #   commands      : 成功钓上物品后触发的指令 (可留空)
-#                   指令前缀 [OP] 以 OP 玩家身份执行, [CONSOLE] 以控制台执行
-#                   支持变量 %player_name%
+#                   指令前缀 (大小写不敏感):
+#                     [OP]        以 OP 玩家身份执行后续指令
+#                     [CONSOLE]   以控制台身份执行后续指令
+#                     [BroadCast] 向全服公告后续文本 (按 & 颜色码上色, 非指令)
+#                     [tell]      仅向钓上鱼的玩家发送后续文本 (按 & 颜色码上色, 非指令)
+#                     (无前缀)    默认以控制台执行
+#                   所有前缀均支持 %player_name% 占位符
 
 rods:
   # ---- 示例: 普通木质鱼竿 (MythicMobs) ----
@@ -26,7 +50,14 @@ rods:
       points: 1.0
       exp: 1.0
     reel-count: "1_3"
-    commands: []
+    catch-rate: 0.8
+    # 鱼咬钩前等待 5-15 秒 (100_300 ticks), 比原版更快咬钩
+    wait-time: "100_300"
+    # 鱼咬钩后给玩家 10-20 秒 (200_400 ticks) 拉杆窗口, 充足时间反应
+    lure-time: "200_400"
+    commands:
+      # [tell] 仅发给钓上鱼的玩家本人
+      - "[tell] &a你钓到了一条普通的鱼!"
 
   # ---- 示例: 史诗鱼竿 (NeigeItems) ----
   epic_rod:
@@ -40,5 +71,26 @@ rods:
       points: 1.5
       exp: 2.0
     reel-count: "1_5"
+    catch-rate: 0.9
+    # 史诗鱼竿: 更快咬钩 + 更长拉杆窗口
+    wait-time: "60_200"
+    lure-time: "300_600"
+    # 倍率提示自定义 (覆盖 messages.yml 默认): 启用独立三条模式
+    multiplier-info: ""              # 留空, 因为下面用了独立三条
+    multiplier-money: "&6史诗鱼竿金币加成: x{money}"
+    multiplier-points: "&b史诗鱼竿点券加成: x{points}"
+    multiplier-exp: "&a史诗鱼竿经验加成: x{exp}"
+    # 自定义变量倍率 (对应 config.yml 的 custom-variables)
+    # 钓上物品时: ll_level 变量增加量 = 物品基础值 * 1.5
+    variable-multipliers:
+      ll_level: 1.5
+    # 自定义变量消息覆盖 (留空则用 config.yml 中 ll_level 的 message)
+    variable-messages:
+      ll_level: "&6[史诗鱼竿] &a+{amount} 等级 &7(基础 {base} × &e{multiplier}&7, 当前: &e{current}&7)"
     commands:
+      # [BroadCast] 向全服公告 (支持 & 颜色码 + %player_name%)
+      - "[BroadCast] &6%player_name% &e用史诗鱼竿钓到了好东西!"
+      # [tell] 仅发给钓上鱼的玩家本人
+      - "[tell] &a哇! 你用史诗鱼竿钓到了稀有物品!"
+      # [CONSOLE] 以控制台身份执行真实指令
       - "[CONSOLE] say %player_name% 用史诗鱼竿钓到了好东西!"

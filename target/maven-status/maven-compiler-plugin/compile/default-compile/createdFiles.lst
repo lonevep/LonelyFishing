@@ -1,6 +1,8 @@
 com\lonelyFishing\fishing\FishingSession.class
+com\lonelyFishing\hooks\PlaceholderAPIHook.class
 com\lonelyFishing\rods\FishingRod.class
 com\lonelyFishing\items\ItemProvider.class
+com\lonelyFishing\rods\LoreBonus.class
 com\lonelyFishing\util\WeightedSelector.class
 com\lonelyFishing\items\ItemGroup.class
 com\lonelyFishing\config\RodManager.class
@@ -10,10 +12,14 @@ com\lonelyFishing\config\ItemGroupManager.class
 com\lonelyFishing\fishing\RewardManager.class
 com\lonelyFishing\fishing\FishingListener.class
 com\lonelyFishing\items\GroupItem.class
+com\lonelyFishing\config\LoreBonusManager.class
 com\lonelyFishing\LonelyFishing.class
 com\lonelyFishing\util\ColorUtil.class
 com\lonelyFishing\hooks\PointsHook.class
 com\lonelyFishing\config\ConfigManager.class
+com\lonelyFishing\config\CustomVariableManager.class
+com\lonelyFishing\config\CustomVariable.class
+com\lonelyFishing\rods\MultiCatch.class
 com\lonelyFishing\hooks\NeigeItemsHook.class
 com\lonelyFishing\hooks\EconomyHook.class
 com\lonelyFishing\hooks\MythicMobsHook.class

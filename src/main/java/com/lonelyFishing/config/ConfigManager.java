@@ -108,6 +108,17 @@ public class ConfigManager {
         return prefix() + ColorUtil.color(raw);
     }
 
+    /**
+     * 对任意模板字符串做占位符替换 + 上色 (不带 prefix)。
+     * 用于鱼竿自定义消息等非 messages.yml 来源的模板。
+     * 对已上色字符串再次 color 是幂等的 (translateAlternateColorCodes 只处理 &).
+     */
+    public String formatTemplate(String template, String... pairs) {
+        String s = template == null ? "" : template;
+        s = replace(s, pairs);
+        return ColorUtil.color(s);
+    }
+
     /** 把 {k} -> v 形式的占位符替换掉 */
     private static String replace(String src, String... pairs) {
         if (src == null) return "";

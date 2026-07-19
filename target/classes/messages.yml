@@ -11,11 +11,22 @@ no-rod: "&c你手中的鱼竿无法用于钓鱼!"
 # 钓上物品 (成功收竿) 提示
 reel-success: "&a你成功钓上了物品!"
 
+# 达到收竿次数但概率判定未钓上 (与 reel-progress 区分: 进度已满但鱼跑了)
+no-catch: "&c鱼跑了! 下次再试试吧!"
+
 # 收竿进度提示 (还未达到所需次数)
 reel-progress: "&e本次还需收竿 &6{required} &e次, 当前进度 &6{progress}&e/&6{required}"
 
 # 倍率提示 (成功钓上物品后展示鱼竿倍率)
+# 两种模式 (鱼竿 rods.yml 可各自覆盖 multiplier-info / -money / -points / -exp):
+#   1) 合三为一: 只配 multiplier-info, 一行展示三项倍率 (默认模式)
+#   2) 独立三条 : 配 multiplier-money / -points / -exp, 分行展示
+#                任意一条独立条目非空即启用独立模式, 此时 multiplier-info 不发送
+# 留空的独立条目不会发送; 占位符 {money}{points}{exp}{player}
 multiplier-info: "&b倍率加成 &7| &e金币 x{money} &b点券 x{points} &a经验 x{exp}"
+multiplier-money: ""
+multiplier-points: ""
+multiplier-exp: ""
 
 # 奖励提示 (对应留空的奖励不会发送)
 reward-money: "&6+{amount} 金币"
@@ -39,9 +50,8 @@ reload-no-perm: "&c你没有权限执行此操作"
 # 未知子指令
 unknown-subcommand: "&c未知子指令, 输入 &e/lfi help &c查看帮助"
 
-# 帮助 (多行列表), {author} 由插件运行时注入
+# 帮助 
 help:
   - "&a========== &eLonelyFishing &a=========="
-  - "&7作者: &f{author}"
   - "&a/lfi reload &7- &f热重载所有配置文件"
   - "&a/lfi help &7- &f显示此帮助信息"

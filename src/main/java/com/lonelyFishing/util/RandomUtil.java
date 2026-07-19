@@ -48,4 +48,34 @@ public final class RandomUtil {
     public static Random random() {
         return RANDOM;
     }
+
+    /**
+     * 解析区间字符串返回 [min, max] (含两端, 不做下界限制, 允许 0)。
+     * "3"     -> [3, 3]
+     * "1_10"  -> [1, 10]
+     * "0_100" -> [0, 100]
+     * null / 空 / 非法 -> null
+     * 用于鱼竿 wait-time / lure-time 这类允许 0 的区间配置。
+     */
+    public static int[] parseRangePair(String spec) {
+        if (spec == null || spec.trim().isEmpty()) return null;
+        spec = spec.trim();
+        int idx = spec.indexOf('_');
+        if (idx < 0) {
+            try {
+                int v = Integer.parseInt(spec);
+                return new int[]{v, v};
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        try {
+            int min = Integer.parseInt(spec.substring(0, idx).trim());
+            int max = Integer.parseInt(spec.substring(idx + 1).trim());
+            if (min > max) { int t = min; min = max; max = t; }
+            return new int[]{min, max};
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

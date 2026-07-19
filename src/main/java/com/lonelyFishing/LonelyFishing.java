@@ -1,13 +1,16 @@
 package com.lonelyFishing;
 
 import com.lonelyFishing.config.ConfigManager;
+import com.lonelyFishing.config.CustomVariableManager;
 import com.lonelyFishing.config.ItemGroupManager;
+import com.lonelyFishing.config.LoreBonusManager;
 import com.lonelyFishing.config.RodManager;
 import com.lonelyFishing.fishing.FishingListener;
 import com.lonelyFishing.fishing.RewardManager;
 import com.lonelyFishing.hooks.EconomyHook;
 import com.lonelyFishing.hooks.MythicMobsHook;
 import com.lonelyFishing.hooks.NeigeItemsHook;
+import com.lonelyFishing.hooks.PlaceholderAPIHook;
 import com.lonelyFishing.hooks.PointsHook;
 import com.lonelyFishing.items.ItemProvider;
 import com.lonelyFishing.security.Sec;
@@ -31,12 +34,15 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
     private RodManager rodManager;
     private ItemProvider itemProvider;
     private RewardManager rewardManager;
+    private LoreBonusManager loreBonusManager;
+    private CustomVariableManager customVariableManager;
     private FishingListener listener;
     // 软依赖 hook (全部反射对接, 缺失也不报错), 存为字段以便热重载时重新探测
     private MythicMobsHook mmHook;
     private NeigeItemsHook niHook;
     private EconomyHook ecoHook;
     private PointsHook ppHook;
+    private PlaceholderAPIHook papiHook;
 
     @Override
     public void onEnable() {
@@ -52,6 +58,7 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
         niHook = new NeigeItemsHook(getLogger());
         ecoHook = new EconomyHook(getLogger());
         ppHook = new PointsHook(getLogger());
+        papiHook = new PlaceholderAPIHook(getLogger());
         initHooks();
 
         itemProvider = new ItemProvider(mmHook, niHook);
@@ -61,8 +68,12 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
         groupManager.load(configManager.getItemGroups());
         rodManager = new RodManager(mmHook, niHook);
         rodManager.load(configManager.getRods());
+        loreBonusManager = new LoreBonusManager();
+        loreBonusManager.load(configManager.getGeneral());
+        customVariableManager = new CustomVariableManager();
+        customVariableManager.load(configManager.getGeneral());
 
-        listener = new FishingListener(configManager, rodManager, groupManager, itemProvider, rewardManager);
+        listener = new FishingListener(configManager, rodManager, groupManager, itemProvider, rewardManager, loreBonusManager, customVariableManager, papiHook);
         getServer().getPluginManager().registerEvents(listener, this);
 
         PluginCommand cmd = getCommand("lonelyfishing");
@@ -136,11 +147,13 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
     }
 
     public void reloadAll() {
-        // 热重载: 重新探测软依赖 (支持启动后才安装的 mm/ni/vault/playerpoints), 再重载配置与缓存
+        // 热重载: 重新探测软依赖 (支持启动后才安装的 mm/ni/vault/playerpoints/papi), 再重载配置与缓存
         initHooks();
         configManager.reload();
         groupManager.load(configManager.getItemGroups());
         rodManager.load(configManager.getRods());
+        if (loreBonusManager != null) loreBonusManager.load(configManager.getGeneral());
+        if (customVariableManager != null) customVariableManager.load(configManager.getGeneral());
     }
 
     /** 重新初始化全部软依赖 hook (idempotent, 缺失插件则置为不可用) */
@@ -149,5 +162,6 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
         if (niHook != null) niHook.init();
         if (ecoHook != null) ecoHook.init();
         if (ppHook != null) ppHook.init();
+        if (papiHook != null) papiHook.init();
     }
 }
