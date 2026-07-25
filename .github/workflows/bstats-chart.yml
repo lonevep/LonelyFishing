@@ -1,0 +1,36 @@
+name: Generate bStats Chart
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # 每6小时更新一次
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - "output/**"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Generate bStats Chart
+        uses: code-lime/bstats-chart@v1
+        with:
+          plugin-id: 32881
+          chart-keys: 'servers,players'
+          output-file: 'output/bstats/stats.png'
+          days: 100
+          width: 800
+          height: 200
+
+      - name: Commit updated chart
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update bStats chart"
