@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +41,25 @@ public class LoreBonusManager {
         String lore = loreObj.toString();
         if (lore.isEmpty()) return null;
 
-        double bonus = 0.0;
-        Object bo = m.get("catch-rate-bonus");
-        if (bo instanceof Number) bonus = ((Number) bo).doubleValue();
+        double catchBonus = num(m, "catch-rate-bonus");
+        double waitBonus = num(m, "wait-time-bonus");
+        double lureBonus = num(m, "lure-time-bonus");
+        double moneyBonus = num(m, "money-bonus");
+        double pointsBonus = num(m, "points-bonus");
+        double expBonus = num(m, "exp-bonus");
+
+        // 解析自定义变量倍率加成 (变量名 -> 加成百分比)
+        Map<String, Double> varBonuses = new HashMap<String, Double>();
+        Object vbObj = m.get("variable-bonuses");
+        if (vbObj instanceof Map) {
+            for (Map.Entry<?, ?> ve : ((Map<?, ?>) vbObj).entrySet()) {
+                if (ve.getKey() == null || ve.getValue() == null) continue;
+                String varName = ve.getKey().toString();
+                double val = 0.0;
+                if (ve.getValue() instanceof Number) val = ((Number) ve.getValue()).doubleValue();
+                if (!varName.isEmpty()) varBonuses.put(varName, val);
+            }
+        }
 
         List<MultiCatch> multi = new ArrayList<MultiCatch>();
         Object mcObj = m.get("multi-catch");
@@ -59,7 +76,15 @@ public class LoreBonusManager {
                 if (amount > 1) multi.add(new MultiCatch(chance, amount));
             }
         }
-        return new LoreBonus(lore, bonus, multi);
+        return new LoreBonus(lore, catchBonus, waitBonus, lureBonus,
+                moneyBonus, pointsBonus, expBonus, varBonuses, multi);
+    }
+
+    /** 从 Map 中取 double, 缺失/非数字返回 0 */
+    private static double num(Map<?, ?> m, String key) {
+        Object o = m.get(key);
+        if (o instanceof Number) return ((Number) o).doubleValue();
+        return 0.0;
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.lonelyFishing;
 
+import com.lonelyFishing.Metrics.Metrics;
 import com.lonelyFishing.config.ConfigManager;
 import com.lonelyFishing.config.CustomVariableManager;
 import com.lonelyFishing.config.ItemGroupManager;
@@ -46,7 +47,10 @@ public final class LonelyFishing extends JavaPlugin implements CommandExecutor, 
 
     @Override
     public void onEnable() {
-        // 启动绿色提示 (作者名以加密形式存储, 运行时解密)
+        int pluginId = 32881;
+        Metrics metrics = new Metrics(this, pluginId);
+
+        // 启动绿色提示
         printBanner(true);
 
         // 配置

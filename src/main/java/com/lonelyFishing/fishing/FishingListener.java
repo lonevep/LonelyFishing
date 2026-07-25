@@ -94,8 +94,8 @@ public class FishingListener implements Listener {
             // 每次抛竿都是新的钓鱼周期: 进度归零, 重新随机所需收竿次数
             // 保证玩家上一次未完成的拉竿进度不会带到本次钓鱼
             resetSession(player, rod);
-            // 抛竿时设置鱼咬钩时间参数 (1.9+ 反射调用 setMinWaitTime 等, 1.8 静默跳过)
-            applyFishTiming(event, rod);
+            // 抛竿时设置鱼咬钩时间参数 (含 lore 加成: 加快钓鱼速度 + 增加拉竿窗口)
+            applyFishTiming(event, rod, held);
             return;
         }
 
@@ -162,12 +162,12 @@ public class FishingListener implements Listener {
         // 钓上: 判定一次性钓上几条 (默认 1, 命中的 multi-catch 取最大 amount)
         int amount = computeMultiCatchAmount(held, rng);
         for (int i = 0; i < amount; i++) {
-            rewardOnce(player, rod);
+            rewardOnce(player, rod, held);
         }
 
         // 钓上总提示 (无论条数仅发一次)
         player.sendMessage(config.format("reel-success"));
-        sendMultiplierInfo(player, rod);
+        sendMultiplierInfo(player, rod, held);
 
         // 重置会话, 重新随机下一次所需次数
         session.reset(rod.getId(), rod.rollReelCount());
@@ -178,12 +178,20 @@ public class FishingListener implements Listener {
      * 发送倍率提示: 鱼竿自定义 > messages.yml 默认。
      * 若独立三条 (money/points/exp) 任意非空 -> 发独立模式 (跳过 multiplier-info);
      * 否则 -> 发合三为一 multiplier-info。
+     * 显示的倍率为 lore 加成后的最终倍率 (鱼竿倍率 * (1 + lore加成))。
      * 占位符 {money}{points}{exp}{player}
      */
-    private void sendMultiplierInfo(Player player, FishingRod rod) {
-        String moneyStr = formatNum(rod.getMoneyMultiplier());
-        String pointsStr = formatNum(rod.getPointsMultiplier());
-        String expStr = formatNum(rod.getExpMultiplier());
+    private void sendMultiplierInfo(Player player, FishingRod rod, ItemStack held) {
+        // 计算 lore 倍率加成 (加法累加), 显示最终倍率让玩家感知 lore 加成效果
+        double moneyBonus = 0.0, pointsBonus = 0.0, expBonus = 0.0;
+        for (LoreBonus b : loreBonuses.getBonuses(held)) {
+            moneyBonus += b.getMoneyBonus();
+            pointsBonus += b.getPointsBonus();
+            expBonus += b.getExpBonus();
+        }
+        String moneyStr = formatNum(rod.getMoneyMultiplier() * (1.0 + moneyBonus));
+        String pointsStr = formatNum(rod.getPointsMultiplier() * (1.0 + pointsBonus));
+        String expStr = formatNum(rod.getExpMultiplier() * (1.0 + expBonus));
 
         String info = resolveMultiplierMsg(rod.getMultiplierInfo(), "multiplier-info", moneyStr, pointsStr, expStr, player.getName());
         String money = resolveMultiplierMsg(rod.getMultiplierMoney(), "multiplier-money", moneyStr, pointsStr, expStr, player.getName());
@@ -207,14 +215,27 @@ public class FishingListener implements Listener {
     }
 
     /**
-     * 单次抽奖 + 发奖: 物品 / 金币 / 点券 / 经验 / 指令。
+     * 单次抽奖 + 发奖: 物品 / 金币 / 点券 / 经验 / 指令 / 自定义变量。
+     * lore 加成: money/points/exp/variable 倍率按 (鱼竿倍率 * (1 + lore加成)) 计算, 多个 lore 加成加法累加。
      * 不发 reel-success / multiplier-info (由调用方统一发一次)。
      */
-    private void rewardOnce(Player player, FishingRod rod) {
+    private void rewardOnce(Player player, FishingRod rod, ItemStack held) {
         GroupItem picked = pickItem(rod);
         if (picked == null) {
             player.sendMessage(config.format("no-item-group"));
             return;
+        }
+
+        // 计算 lore 倍率加成 (加法累加后一次乘)
+        double moneyBonus = 0.0, pointsBonus = 0.0, expBonus = 0.0;
+        Map<String, Double> varBonuses = new HashMap<String, Double>();
+        for (LoreBonus b : loreBonuses.getBonuses(held)) {
+            moneyBonus += b.getMoneyBonus();
+            pointsBonus += b.getPointsBonus();
+            expBonus += b.getExpBonus();
+            for (Map.Entry<String, Double> ve : b.getVariableBonuses().entrySet()) {
+                varBonuses.merge(ve.getKey(), ve.getValue(), Double::sum);
+            }
         }
 
         // 1. 物品
@@ -227,10 +248,10 @@ public class FishingListener implements Listener {
             giveItem(player, reward);
         }
 
-        // 2. 金币 (物品配置 * 鱼竿倍率)
+        // 2. 金币 (物品配置 * 鱼竿倍率 * (1 + lore加成))
         Double money = picked.getMoney();
         if (money != null) {
-            double amount = money * rod.getMoneyMultiplier();
+            double amount = money * rod.getMoneyMultiplier() * (1.0 + moneyBonus);
             if (rewards.giveMoney(player, amount)) {
                 player.sendMessage(config.format("reward-money", "amount", formatNum(amount)));
             } else if (!rewards.economyEnabled()) {
@@ -241,7 +262,7 @@ public class FishingListener implements Listener {
         // 3. 点券
         Integer points = picked.getPoints();
         if (points != null) {
-            int amount = (int) Math.round(points * rod.getPointsMultiplier());
+            int amount = (int) Math.round(points * rod.getPointsMultiplier() * (1.0 + pointsBonus));
             if (rewards.givePoints(player, amount)) {
                 player.sendMessage(config.format("reward-points", "amount", String.valueOf(amount)));
             } else if (!rewards.pointsEnabled()) {
@@ -252,7 +273,7 @@ public class FishingListener implements Listener {
         // 4. 经验
         Integer exp = picked.getExp();
         if (exp != null) {
-            int amount = (int) Math.round(exp * rod.getExpMultiplier());
+            int amount = (int) Math.round(exp * rod.getExpMultiplier() * (1.0 + expBonus));
             rewards.giveExp(player, amount);
             player.sendMessage(config.format("reward-exp", "amount", String.valueOf(amount)));
         }
@@ -261,19 +282,20 @@ public class FishingListener implements Listener {
         rewards.executeCommands(player, picked.getCommands());
         rewards.executeCommands(player, rod.getCommands());
 
-        // 6. 自定义变量 (物品基础值 * 鱼竿倍率, 通过指令增加; PAPI 读取当前值用于消息提示)
-        giveCustomVariables(player, rod, picked);
+        // 6. 自定义变量 (物品基础值 * 鱼竿倍率 * (1 + lore加成), 通过指令增加; PAPI 读取当前值用于消息提示)
+        giveCustomVariables(player, rod, picked, varBonuses);
     }
 
     /**
-     * 发放自定义变量奖励: 遍历物品配置的 variables, 按 (基础值 * 鱼竿倍率) 计算最终增加量,
+     * 发放自定义变量奖励: 遍历物品配置的 variables, 按 (基础值 * 鱼竿倍率 * (1 + lore加成)) 计算最终增加量,
      * 执行变量的 add-command 增加变量值, 并发送消息提示。
-     * - 倍率: 鱼竿 variable-multipliers[varName] > 1.0
+     * - 倍率: 鱼竿 variable-multipliers[varName] * (1 + loreVarBonuses[varName]), 默认 1.0
      * - 消息: 鱼竿 variable-messages[varName] > config.yml custom-variables[varName].message
-     * - 占位符: {amount}(最终增加量) {base}(基础值) {multiplier}(倍率) {current}(当前值, PAPI 读取) {player}
+     * - 占位符: {amount}(最终增加量) {base}(基础值) {multiplier}(倍率, 含 lore 加成) {current}(当前值, PAPI 读取) {player}
      * - PAPI 未安装时 {current} 为空, 变量增加指令仍会执行
      */
-    private void giveCustomVariables(Player player, FishingRod rod, GroupItem picked) {
+    private void giveCustomVariables(Player player, FishingRod rod, GroupItem picked,
+                                     Map<String, Double> loreVarBonuses) {
         Map<String, Double> itemVars = picked.getVariables();
         if (itemVars == null || itemVars.isEmpty()) return;
         Map<String, Double> rodMul = rod.getVariableMultipliers();
@@ -283,7 +305,10 @@ public class FishingListener implements Listener {
             double base = e.getValue();
             CustomVariable cv = customVariables == null ? null : customVariables.get(varName);
             if (cv == null) continue;  // config.yml 未配置此变量, 跳过
-            double mul = (rodMul != null && rodMul.containsKey(varName)) ? rodMul.get(varName) : 1.0;
+            double rodMulVal = (rodMul != null && rodMul.containsKey(varName)) ? rodMul.get(varName) : 1.0;
+            double loreBonus = (loreVarBonuses != null && loreVarBonuses.containsKey(varName))
+                    ? loreVarBonuses.get(varName) : 0.0;
+            double mul = rodMulVal * (1.0 + loreBonus);  // 鱼竿倍率 * (1 + lore加成)
             double amount = base * mul;
             if (amount <= 0) continue;
             // 执行增加变量的指令 (替换 {amount} 和 %player_name%)
@@ -349,23 +374,34 @@ public class FishingListener implements Listener {
      * 设置鱼咬钩时间参数:
      *  - wait-time: 鱼咬钩前的等待时间 (减小=加快钓鱼速度)
      *  - lure-time: 鱼咬钩后玩家拉杆的时间窗口 (增大=有更多时间拉杆)
+     * lore 加成: wait-time-bonus 加快钓鱼速度 (wait × (1-bonus)),
+     *           lure-time-bonus 增加拉竿窗口 (lure × (1+bonus)), 多个 lore 加成加法累加后一次乘。
      * 仅 1.9+ 服务端的 FishHook 提供 setMinWaitTime/setMaxWaitTime/setMinLureTime/setMaxLureTime,
      * 1.8 反射找不到这些方法会静默跳过 (1.8 仅支持 setBiteChance, 此处不降级)。
      */
-    private void applyFishTiming(PlayerFishEvent event, FishingRod rod) {
+    private void applyFishTiming(PlayerFishEvent event, FishingRod rod, ItemStack held) {
         Object hook = getHook(event);
         if (hook == null) return;
+        // 计算 lore 加成累计百分比 (加法累加后一次乘)
+        double waitBonus = 0.0;  // 加速百分比: wait × (1 - bonus)
+        double lureBonus = 0.0;  // 窗口增加百分比: lure × (1 + bonus)
+        for (LoreBonus b : loreBonuses.getBonuses(held)) {
+            waitBonus += b.getWaitTimeBonus();
+            lureBonus += b.getLureTimeBonus();
+        }
         int[] wait = RandomUtil.parseRangePair(rod.getWaitTimeSpec());
         int[] lure = RandomUtil.parseRangePair(rod.getLureTimeSpec());
         if (wait != null) {
-            int lo = Math.max(0, wait[0]);
-            int hi = Math.max(lo, wait[1]);
+            double factor = Math.max(0.0, 1.0 - waitBonus);  // 加速: 减小等待时间
+            int lo = Math.max(0, (int) Math.round(wait[0] * factor));
+            int hi = Math.max(lo, (int) Math.round(wait[1] * factor));
             invokeIntSetter(hook, "setMinWaitTime", lo);
             invokeIntSetter(hook, "setMaxWaitTime", hi);
         }
         if (lure != null) {
-            int lo = Math.max(0, lure[0]);
-            int hi = Math.max(lo, lure[1]);
+            double factor = Math.max(0.0, 1.0 + lureBonus);  // 增加窗口
+            int lo = Math.max(0, (int) Math.round(lure[0] * factor));
+            int hi = Math.max(lo, (int) Math.round(lure[1] * factor));
             invokeIntSetter(hook, "setMinLureTime", lo);
             invokeIntSetter(hook, "setMaxLureTime", hi);
         }

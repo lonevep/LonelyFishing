@@ -12,29 +12,60 @@ message-cooldown: 3
 drop-when-full: true
 
 # ============================ lore 加成配置 ============================
-# 鱼竿 lore 加成: 通过检测鱼竿上的 lore 行来增加钓上鱼的概率与一次性钓上的条数。
+# 鱼竿 lore 加成: 通过检测鱼竿上的 lore 行来增加钓率、加快钓鱼速度、增加拉竿窗口、
+# 提升金币/点券/经验/自定义变量获取倍率, 以及一次性钓上的条数。
 #
-# 字段说明 (每个条目):
+# 字段说明 (每个条目, 除 lore 外均可留空, 留空 = 不触发该项加成):
 #   lore              : 触发加成所需的 lore 子串 (匹配前会对鱼竿 lore 和此关键字都去除颜色码)
 #                       只要鱼竿任意一行 lore 包含此关键字即视为命中
 #   catch-rate-bonus  : 钓上鱼概率加成, 0.1 表示 +10%
-#                       计算方式: 最终概率 = 鱼竿基础 catch-rate * (1 + 加成)
+#                       计算方式: 最终概率 = 鱼竿基础 catch-rate * (1 + 加成), 上限 100%
 #                       多个命中条目做乘法叠加 (例: 两个 0.1 -> * 1.1 * 1.1)
+#   wait-time-bonus   : 加快钓到鱼速度, 0.1 表示加快 10%
+#                       计算方式: 实际等待 = 鱼竿 wait-time * (1 - 加成), 多个条目加法累加后一次乘
+#                       例: wait-time 100 ticks + 加成 0.1 -> 100 * 0.9 = 90 ticks (更快咬钩)
+#   lure-time-bonus   : 增加拉竿窗口时间, 0.1 表示 +10%
+#                       计算方式: 实际窗口 = 鱼竿 lure-time * (1 + 加成), 多个条目加法累加后一次乘
+#                       例: lure-time 200 ticks + 加成 0.1 -> 200 * 1.1 = 220 ticks (更多时间拉杆)
+#   money-bonus       : 金币获取倍率加成, 0.1 表示 +10%
+#                       计算方式: 最终倍率 = 鱼竿 money-multiplier * (1 + 加成), 多个条目加法累加
+#   points-bonus      : 点券获取倍率加成, 同上
+#   exp-bonus         : 经验获取倍率加成, 同上
+#   variable-bonuses  : 自定义变量倍率加成 (变量名 -> 加成百分比), 对应 config.yml 的 custom-variables
+#                       计算方式: 最终倍率 = 鱼竿 variable-multipliers[变量] * (1 + 加成)
+#                       例: variable-bonuses: {ll_level: 0.1} -> ll_level 变量获取 +10%
 #   multi-catch       : 命中后按概率提升一次性钓上的条数 (取命中条目最大 amount, 默认 1 条)
 #     - chance        : 命中此条目的概率 (0-1)
 #     - amount        : 一次性钓上的条数 (>=2 才会生效)
 #
 # 示例: 鱼竿上有 lore "海之眷顾 I"
 #   - 钓上鱼概率 +10% (基础 0.8 -> 0.8 * 1.1 = 0.88)
+#   - 加快钓到鱼速度 10% (wait-time 100 -> 90 ticks)
+#   - 增加拉竿窗口 10% (lure-time 200 -> 220 ticks)
+#   - 金币/点券/经验/ll_level 变量获取 +10%
 #   - 10% 概率一次性钓上 2 条
 lore-bonuses:
   - lore: "海之眷顾 I"
     catch-rate-bonus: 0.1
+    wait-time-bonus: 0.1
+    lure-time-bonus: 0.1
+    money-bonus: 0.1
+    points-bonus: 0.1
+    exp-bonus: 0.1
+    variable-bonuses:
+      ll_level: 0.1
     multi-catch:
       - chance: 0.1
         amount: 2
   - lore: "海之眷顾 II"
     catch-rate-bonus: 0.2
+    wait-time-bonus: 0.15
+    lure-time-bonus: 0.15
+    money-bonus: 0.2
+    points-bonus: 0.2
+    exp-bonus: 0.2
+    variable-bonuses:
+      ll_level: 0.2
     multi-catch:
       - chance: 0.2
         amount: 2
@@ -42,6 +73,13 @@ lore-bonuses:
         amount: 3
   - lore: "海之眷顾 III"
     catch-rate-bonus: 0.3
+    wait-time-bonus: 0.2
+    lure-time-bonus: 0.2
+    money-bonus: 0.3
+    points-bonus: 0.3
+    exp-bonus: 0.3
+    variable-bonuses:
+      ll_level: 0.3
     multi-catch:
       - chance: 0.3
         amount: 2
