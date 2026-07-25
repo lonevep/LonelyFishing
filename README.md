@@ -41,7 +41,7 @@
 
 **NeigeItems物品库:** https://github.com/ankhorg/NeigeItems-Kotlin/releases
 
-[![bStats](https://img.shields.io/badge/bStats-查看统计-blue)](https://bstats.org/plugin/bukkit/LonelyFishing/pluginId)
+[![bStats](https://img.shields.io/badge/bStats-查看统计-blue)](https://bstats.org/plugin/bukkit/LonelyFishing/32881)
 
 ![bStats Stats](output/bstats/stats.png)
 
