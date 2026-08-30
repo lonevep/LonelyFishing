@@ -1,4 +1,4 @@
-﻿name: LonelyFishing
+name: LonelyFishing
 version: '1.0'
 main: com.lonelyFishing.LonelyFishing
 api-version: '1.13'
