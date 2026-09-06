@@ -43,5 +43,5 @@
 
 [![bStats](https://img.shields.io/badge/bStats-查看统计-blue)](https://bstats.org/plugin/bukkit/LonelyFishing/32881)
 
-![bStats Stats](output/bstats/stats.png)
+![bStats](https://bstats.org/signatures/bukkit/LonelyFishing.svg)
 
